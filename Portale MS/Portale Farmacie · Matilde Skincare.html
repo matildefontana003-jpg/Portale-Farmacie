@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portale Farmacie · Matilde Skincare</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; font-size: 15px; }
+    #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #fff; }
+    .login-box { width: 400px; padding: 48px 40px; text-align: center; }
+    .login-brand { font-size: 13px; font-weight: 500; letter-spacing: 0.08em; color: #6e6e73; text-transform: uppercase; margin-bottom: 12px; }
+    .login-title { font-size: 28px; font-weight: 600; color: #1d1d1f; margin-bottom: 8px; letter-spacing: -0.3px; }
+    .login-subtitle { font-size: 15px; color: #6e6e73; margin-bottom: 36px; }
+    .login-input { width: 100%; padding: 13px 16px; border: 1px solid #d2d2d7; border-radius: 10px; background: #f5f5f7; font-family: inherit; font-size: 15px; color: #1d1d1f; outline: none; transition: border-color 0.15s, box-shadow 0.15s; margin-bottom: 12px; text-align: center; }
+    .login-input:focus { border-color: #0071e3; box-shadow: 0 0 0 3px rgba(0,113,227,0.15); background: #fff; }
+    .login-btn { width: 100%; padding: 13px; background: #0071e3; color: #fff; border: none; border-radius: 10px; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+    .login-btn:hover { background: #0077ed; }
+    .login-error { margin-top: 12px; font-size: 13px; color: #ff3b30; display: none; }
+    #app { display: none; min-height: 100vh; }
+    nav { background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 100; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 52px; }
+    .nav-brand { font-size: 17px; font-weight: 600; color: #1d1d1f; letter-spacing: -0.2px; }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-farmacia { font-size: 13px; color: #6e6e73; }
+    .btn-logout { font-size: 13px; font-weight: 500; color: #0071e3; background: none; border: none; cursor: pointer; font-family: inherit; }
+    .main { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
+    .page-title { font-size: 28px; font-weight: 700; color: #1d1d1f; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .page-meta { font-size: 13px; color: #6e6e73; margin-bottom: 20px; }
+    .summary-box { background: #fff; border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; border: 1px solid #e8e8ed; display: flex; gap: 32px; flex-wrap: wrap; }
+    .summary-label { font-size: 11px; font-weight: 600; color: #aeaeb2; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .summary-value { font-size: 24px; font-weight: 700; color: #1d1d1f; letter-spacing: -0.5px; }
+    .summary-value.blue { color: #0071e3; }
+    .summary-value.green { color: #34c759; }
+    .search-wrap { position: relative; margin-bottom: 16px; }
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #aeaeb2; font-size: 15px; pointer-events: none; }
+    .search-input { width: 100%; padding: 11px 16px 11px 40px; border: 1px solid #d2d2d7; border-radius: 10px; background: #fff; font-family: inherit; font-size: 15px; color: #1d1d1f; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    .search-input:focus { border-color: #0071e3; box-shadow: 0 0 0 3px rgba(0,113,227,0.15); }
+    .search-input::placeholder { color: #aeaeb2; }
+    .search-clear { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #aeaeb2; color: #fff; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; cursor: pointer; display: none; align-items: center; justify-content: center; font-family: inherit; }
+    .search-clear.show { display: flex; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .filter-tabs { display: flex; background: #e8e8ed; border-radius: 8px; padding: 2px; gap: 2px; }
+    .filter-tab { padding: 5px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #6e6e73; background: none; border: none; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .filter-tab.active { background: #fff; color: #1d1d1f; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+    .btn-refresh { font-size: 13px; font-weight: 500; color: #0071e3; background: none; border: none; cursor: pointer; font-family: inherit; }
+    .consulenze-list { display: flex; flex-direction: column; gap: 1px; background: #d2d2d7; border-radius: 12px; overflow: hidden; }
+    .consulenza-card { background: #fff; cursor: pointer; }
+    .consulenza-card:first-child { border-radius: 12px 12px 0 0; }
+    .consulenza-card:last-child { border-radius: 0 0 12px 12px; }
+    .consulenza-card:only-child { border-radius: 12px; }
+    .consulenza-card:hover { background: #fafafa; }
+    .card-row { padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+    .card-avatar { width: 40px; height: 40px; border-radius: 50%; background: #f5f5f7; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #1d1d1f; flex-shrink: 0; }
+    .card-info { flex: 1; min-width: 0; }
+    .card-nome { font-size: 15px; font-weight: 600; color: #1d1d1f; margin-bottom: 2px; }
+    .card-pelle { font-size: 13px; color: #6e6e73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-meta { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .card-totale { text-align: right; }
+    .card-totale-val { font-size: 15px; font-weight: 600; color: #1d1d1f; }
+    .card-totale-label { font-size: 11px; color: #aeaeb2; }
+    .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+    .badge-attesa { background: #fff3cd; color: #856404; }
+    .badge-completa { background: #d4edda; color: #155724; }
+    .badge-altro { background: #f5f5f7; color: #6e6e73; }
+    .card-chevron { color: #aeaeb2; font-size: 13px; transition: transform 0.2s; flex-shrink: 0; }
+    .consulenza-card.open .card-chevron { transform: rotate(180deg); }
+    .detail-panel { display: none; border-top: 1px solid #f2f2f2; background: #fafafa; }
+    .consulenza-card.open .detail-panel { display: block; }
+    .detail-loading { padding: 24px 20px; font-size: 13px; color: #aeaeb2; }
+    .prodotti-section { padding: 16px 20px 0; }
+    .section-title { font-size: 11px; font-weight: 600; color: #aeaeb2; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 12px; }
+    .prodotto-item { background: #fff; border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; border: 1px solid #e8e8ed; }
+    .prodotto-top { margin-bottom: 6px; }
+    .prodotto-nome { font-size: 15px; font-weight: 600; color: #1d1d1f; }
+    .prodotto-brand { font-size: 13px; color: #6e6e73; margin-top: 1px; }
+    .prodotto-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+    .tag { display: inline-flex; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+    .step-acqua-micellare     { background: #fce4ec; color: #c2185b; }
+    .step-olio-detergente     { background: #fff9c4; color: #f57f17; }
+    .step-detergente-schiumogeno { background: #e3f2fd; color: #1565c0; }
+    .step-crema-detergente    { background: #f3e5f5; color: #6a1b9a; }
+    .step-esfoliante          { background: #ede7f6; color: #4527a0; }
+    .step-tonico              { background: #fce4ec; color: #b71c1c; }
+    .step-essenza             { background: #e3f2fd; color: #1565c0; }
+    .step-contorno-occhi      { background: #e8f5e9; color: #2e7d32; }
+    .step-trattamento-siero   { background: #f5f5f5; color: #616161; }
+    .step-siero-lenitivo      { background: #e8f5e9; color: #2e7d32; }
+    .step-siero-idratante     { background: #e3f2fd; color: #1565c0; }
+    .step-crema-idratante     { background: #fce4ec; color: #c2185b; }
+    .step-crema-gel           { background: #fce4ec; color: #b71c1c; }
+    .step-protezione-solare   { background: #fff9c4; color: #f57f17; }
+    .step-cc-cream            { background: #e8f5e9; color: #2e7d32; }
+    .step-makeup              { background: #efebe9; color: #4e342e; }
+    .step-default             { background: #f5f5f7; color: #6e6e73; }
+    .tag-notte  { background: #e8eaf6; color: #283593; }
+    .tag-giorno { background: #fff9c4; color: #f57f17; }
+    .tag-altro  { background: #f5f5f7; color: #6e6e73; }
+    .prodotto-utilizzo { font-size: 13px; color: #6e6e73; line-height: 1.5; margin-bottom: 10px; }
+    .prodotto-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .prodotto-prezzo-wrap { display: flex; align-items: center; gap: 5px; }
+    .prodotto-prezzo-label { font-size: 13px; color: #6e6e73; font-weight: 500; }
+    .prodotto-prezzo-input { width: 80px; padding: 5px 8px; border: 1px solid #d2d2d7; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 600; color: #1d1d1f; background: #f5f5f7; outline: none; text-align: right; }
+    .prodotto-prezzo-input:focus { border-color: #0071e3; background: #fff; box-shadow: 0 0 0 2px rgba(0,113,227,0.12); }
+    .prodotto-prezzo-input::placeholder { color: #aeaeb2; font-weight: 400; font-size: 13px; }
+    .ritirato-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .ritirato-toggle input[type="checkbox"] { width: 16px; height: 16px; accent-color: #34c759; cursor: pointer; }
+    .ritirato-toggle span { font-size: 13px; color: #6e6e73; }
+    .actions-section { padding: 16px 20px; display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+    .action-group { flex: 1; min-width: 160px; }
+    .action-label { font-size: 11px; font-weight: 600; color: #aeaeb2; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+    .action-select { width: 100%; padding: 9px 12px; border: 1px solid #d2d2d7; border-radius: 8px; background: #fff; font-family: inherit; font-size: 14px; color: #1d1d1f; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236e6e73' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+    .action-select:focus { border-color: #0071e3; box-shadow: 0 0 0 3px rgba(0,113,227,0.15); }
+    .action-input { width: 100%; padding: 9px 12px; border: 1px solid #d2d2d7; border-radius: 8px; background: #fff; font-family: inherit; font-size: 14px; color: #1d1d1f; outline: none; }
+    .action-input:focus { border-color: #0071e3; box-shadow: 0 0 0 3px rgba(0,113,227,0.15); }
+    .totale-auto-info { font-size: 12px; color: #aeaeb2; margin-top: 4px; }
+    .btn-save { padding: 9px 20px; background: #0071e3; color: #fff; border: none; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; white-space: nowrap; align-self: flex-end; }
+    .btn-save:hover { background: #0077ed; }
+    .save-ok { font-size: 13px; color: #34c759; align-self: flex-end; padding-bottom: 10px; opacity: 0; transition: opacity 0.3s; }
+    .save-ok.show { opacity: 1; }
+    .empty { text-align: center; padding: 60px 20px; background: #fff; border-radius: 12px; }
+    .empty-title { font-size: 17px; font-weight: 600; color: #1d1d1f; margin-bottom: 6px; }
+    .empty-sub { font-size: 14px; color: #6e6e73; }
+    .loading-state { text-align: center; padding: 60px 20px; color: #aeaeb2; font-size: 14px; }
+    .highlight { background: #fff3cd; border-radius: 2px; padding: 0 1px; }
+    @media (max-width: 600px) { .card-totale { display: none; } nav { padding: 0 16px; } .main { padding: 20px 12px 40px; } .summary-box { gap: 20px; } }
+  </style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-brand">Matilde Skincare</div>
+    <h1 class="login-title">Portale Farmacie</h1>
+    <p class="login-subtitle">Accedi per visualizzare le tue consulenze</p>
+    <input type="text" id="login-farmacia" class="login-input" placeholder="Nome della farmacia" autocomplete="off" />
+    <input type="password" id="login-password" class="login-input" placeholder="Password" autocomplete="off" />
+    <button class="login-btn" onclick="doLogin()">Accedi</button>
+    <div class="login-error" id="login-error">Nome farmacia o password non corretti.</div>
+  </div>
+</div>
+
+<div id="app">
+  <nav>
+    <div class="nav-brand">Matilde Skincare</div>
+    <div class="nav-right">
+      <span class="nav-farmacia" id="nav-farmacia"></span>
+      <button class="btn-logout" onclick="doLogout()">Esci</button>
+    </div>
+  </nav>
+  <div class="main">
+    <h1 class="page-title">Consulenze</h1>
+    <p class="page-meta" id="page-meta">Caricamento...</p>
+
+    <div class="summary-box" id="summary-box" style="display:none">
+      <div class="summary-item">
+        <div class="summary-label">Totali</div>
+        <div class="summary-value blue" id="sum-totali">—</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">In attesa</div>
+        <div class="summary-value" id="sum-attesa">—</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label">Inviate</div>
+        <div class="summary-value" id="sum-completa">—</div>
+      </div>
+      <div class="summary-item" style="margin-left:auto">
+        <div class="summary-label">Totale ritirato</div>
+        <div class="summary-value green" id="sum-ritirato-euro">€0.00</div>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" class="search-input" placeholder="Cerca cliente..." autocomplete="off" oninput="onSearch(this.value)" />
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+    </div>
+
+    <div class="toolbar">
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="setFilter('tutti', this)">Tutte</button>
+        <button class="filter-tab" onclick="setFilter('In attesa di ritiro', this)">In attesa</button>
+        <button class="filter-tab" onclick="setFilter('Prodotti ritirati', this)">Inviate</button>
+      </div>
+      <button class="btn-refresh" onclick="loadConsulenze()">&#8635; Aggiorna</button>
+    </div>
+
+    <div id="container"></div>
+  </div>
+</div>
+
+<script>
+  const API = 'https://script.google.com/macros/s/AKfycbwHCgmbU-aFddKETv3eT32iLPfczgBQrgAcgybxE6pLrI2FedRbSKLGd7KVNHnH8INd/exec';
+
+  const FARMACIE_AUTH = {
+    'parafarmacia alla stazione': {
+      password: 'PFS2026!F4rmaci4#ParaFS@sk1n',
+      displayName: 'Parafarmacia alla stazione'
+    }
+  };
+
+  let farmacia = '', consulenze = [], filtro = 'tutti', ricerca = '';
+  let prodottiCache = {};
+
+  // ── localStorage helpers ──────────────────────────────────────────────────
+
+  function lsKey(tipo, cId, extra) {
+    const base = tipo + '_' + farmacia.replace(/\s+/g, '_') + '_' + cId;
+    return extra ? base + '_' + extra : base;
+  }
+
+  function getPrezzo(cId, prodId) {
+    return localStorage.getItem(lsKey('prezzo', cId, prodId));
+  }
+
+  function setPrezzo(cId, prodId, val) {
+    if (val === '' || val === null || val === undefined) {
+      localStorage.removeItem(lsKey('prezzo', cId, prodId));
+    } else {
+      localStorage.setItem(lsKey('prezzo', cId, prodId), val);
+    }
+  }
+
+  function getTotale(cId) {
+    return localStorage.getItem(lsKey('totale', cId));
+  }
+
+  function setTotale(cId, val) {
+    if (val === '' || val === null || val === undefined) {
+      localStorage.removeItem(lsKey('totale', cId));
+    } else {
+      localStorage.setItem(lsKey('totale', cId), val);
+    }
+  }
+
+  // ── Auth ──────────────────────────────────────────────────────────────────
+
+  function doLogin() {
+    const nome = document.getElementById('login-farmacia').value.trim().toLowerCase();
+    const pass = document.getElementById('login-password').value.trim();
+    const auth = FARMACIE_AUTH[nome];
+    if (!auth || auth.password !== pass) {
+      document.getElementById('login-error').style.display = 'block';
+      return;
+    }
+    farmacia = nome;
+    document.getElementById('login-error').style.display = 'none';
+    document.getElementById('nav-farmacia').textContent = auth.displayName;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('summary-box').style.display = 'flex';
+    loadConsulenze();
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') doLogin();
+  });
+
+  function doLogout() {
+    farmacia = '';
+    consulenze = [];
+    prodottiCache = {};
+    filtro = 'tutti';
+    ricerca = '';
+    document.getElementById('login-farmacia').value = '';
+    document.getElementById('login-password').value = '';
+    document.getElementById('summary-box').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+
+  // ── Tags ──────────────────────────────────────────────────────────────────
+
+  function stepClass(s) {
+    if (!s) return 'step-default';
+    const n = s.toLowerCase().trim();
+    if (n.includes('acqua micellare')) return 'step-acqua-micellare';
+    if (n.includes('olio detergente')) return 'step-olio-detergente';
+    if (n.includes('detergente schiumogeno')) return 'step-detergente-schiumogeno';
+    if (n.includes('crema detergente')) return 'step-crema-detergente';
+    if (n.includes('esfoliante')) return 'step-esfoliante';
+    if (n.includes('tonico')) return 'step-tonico';
+    if (n.includes('essenza')) return 'step-essenza';
+    if (n.includes('contorno occhi')) return 'step-contorno-occhi';
+    if (n.includes('trattamento') && n.includes('siero')) return 'step-trattamento-siero';
+    if (n.includes('siero lenitivo')) return 'step-siero-lenitivo';
+    if (n.includes('siero idratante')) return 'step-siero-idratante';
+    if (n.includes('crema gel')) return 'step-crema-gel';
+    if (n.includes('crema idratante')) return 'step-crema-idratante';
+    if (n.includes('protezione solare')) return 'step-protezione-solare';
+    if (n.includes('cc cream')) return 'step-cc-cream';
+    if (n.includes('make-up') || n.includes('makeup')) return 'step-makeup';
+    return 'step-default';
+  }
+
+  function stepTags(step) {
+    if (!step) return '';
+    const seen = new Set();
+    const lista = Array.isArray(step) ? step : step.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    return lista.filter(function(v) {
+      var k = v.toLowerCase();
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    }).map(function(v) {
+      return '<span class="tag ' + stepClass(v) + '">' + v + '</span>';
+    }).join('');
+  }
+
+  function ritualeTags(rituale) {
+    if (!rituale) return '';
+    var lista;
+    if (Array.isArray(rituale)) {
+      lista = rituale;
+    } else {
+      // Prova a parsare come JSON array
+      try {
+        var parsed = JSON.parse(rituale);
+        lista = Array.isArray(parsed) ? parsed : [String(rituale)];
+      } catch(e) {
+        lista = String(rituale).split(/[,;]+/).map(function(v) { return v.trim(); }).filter(Boolean);
+      }
+    }
+    var seen = new Set();
+    var t = '';
+    for (var i = 0; i < lista.length; i++) {
+      var v = lista[i];
+      var vl = v.toLowerCase().trim();
+      if (!vl || seen.has(vl)) continue;
+      seen.add(vl);
+      if (vl.indexOf('giorno') >= 0 || vl.indexOf('mattino') >= 0 || vl.indexOf('mattina') >= 0) {
+        t += '<span class="tag tag-giorno">Giorno</span>';
+      } else if (vl.indexOf('notte') >= 0 || vl.indexOf('sera') >= 0) {
+        t += '<span class="tag tag-notte">Notte</span>';
+      } else {
+        t += '<span class="tag tag-altro">' + v + '</span>';
+      }
+    }
+    return t;
+  }
+
+  // ── Calcolo totale spuntati ───────────────────────────────────────────────
+
+  function calcolaTotaleSpuntati(cId) {
+    var prodotti = prodottiCache[cId] || [];
+    var totale = 0;
+    for (var i = 0; i < prodotti.length; i++) {
+      var p = prodotti[i];
+      if (!p.ritirato) continue;
+      var pvSaved = getPrezzo(cId, p.prodotto_id);
+      var val = pvSaved !== null ? parseFloat(pvSaved) : (p.prezzo !== '' && p.prezzo !== undefined && p.prezzo !== null ? parseFloat(p.prezzo) : 0);
+      if (!isNaN(val)) totale += val;
+    }
+    return totale;
+  }
+
+  // ── Load consulenze ───────────────────────────────────────────────────────
+
+  async function loadConsulenze() {
+    document.getElementById('container').innerHTML = '<div class="loading-state">Caricamento...</div>';
+    try {
+      var res = await fetch(API + '?action=getConsulenze&farmacia_nome=' + encodeURIComponent(farmacia));
+      var data = await res.json();
+      if (data.error) { showError(data.error); return; }
+      consulenze = data.consulenze || [];
+
+      // Applica totali da localStorage (priorità su Notion)
+      consulenze.forEach(function(c) {
+        var saved = getTotale(c.consulenza_id);
+        if (saved !== null && saved !== '') {
+          c.totale_ritirato = saved;
+        }
+      });
+
+      prodottiCache = {};
+      updateSummary();
+      render();
+    } catch(e) { showError('Errore di connessione. Riprova.'); }
+  }
+
+  // ── Summary ───────────────────────────────────────────────────────────────
+
+  function updateSummary() {
+    document.getElementById('sum-totali').textContent = consulenze.length;
+    document.getElementById('sum-attesa').textContent = consulenze.filter(function(c) { return c.stato === 'In attesa di ritiro'; }).length;
+    document.getElementById('sum-completa').textContent = consulenze.filter(function(c) { return c.stato === 'Prodotti ritirati'; }).length;
+    var tot = consulenze.reduce(function(s, c) { return s + (parseFloat(c.totale_ritirato) || 0); }, 0);
+    document.getElementById('sum-ritirato-euro').textContent = '€' + tot.toFixed(2);
+    document.getElementById('page-meta').textContent = consulenze.length + ' consulenz' + (consulenze.length === 1 ? 'a' : 'e');
+    document.getElementById('summary-box').style.display = 'flex';
+  }
+
+  // ── Filtro e ricerca ──────────────────────────────────────────────────────
+
+  function setFilter(f, btn) {
+    filtro = f;
+    document.querySelectorAll('.filter-tab').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+    render();
+  }
+
+  function onSearch(val) {
+    ricerca = val.toLowerCase();
+    document.getElementById('search-clear').classList.toggle('show', val.length > 0);
+    render();
+  }
+
+  function clearSearch() {
+    ricerca = '';
+    document.getElementById('search-input').value = '';
+    document.getElementById('search-clear').classList.remove('show');
+    render();
+  }
+
+  function highlight(text) {
+    if (!ricerca || !text) return text || '';
+    var re = new RegExp('(' + ricerca.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+    return text.replace(re, '<span class="highlight">$1</span>');
+  }
+
+  // ── Render lista ──────────────────────────────────────────────────────────
+
+  function render() {
+    var lista = consulenze;
+    if (filtro !== 'tutti') lista = lista.filter(function(c) { return c.stato === filtro; });
+    if (ricerca) lista = lista.filter(function(c) { return (c.cliente_nome || '').toLowerCase().indexOf(ricerca) >= 0; });
+
+    if (lista.length === 0) {
+      document.getElementById('container').innerHTML =
+        '<div class="empty"><div class="empty-title">Nessuna consulenza</div><div class="empty-sub">Nessun risultato per i filtri selezionati.</div></div>';
+      return;
+    }
+
+    var html = '<div class="consulenze-list">' +
+      lista.map(function(c) {
+        var totSalvato = getTotale(c.consulenza_id);
+        var totVal = (totSalvato !== null && totSalvato !== '') ? totSalvato : c.totale_ritirato;
+        var totDisplay = (totVal !== '' && totVal !== null && totVal !== undefined) ? '&euro;' + parseFloat(totVal).toFixed(2) : '&mdash;';
+        var initials = (c.cliente_nome || '?').split(' ').map(function(w) { return w[0]; }).slice(0,2).join('').toUpperCase();
+        var badgeClass = c.stato === 'In attesa di ritiro' ? 'badge-attesa' : c.stato === 'Prodotti ritirati' ? 'badge-completa' : 'badge-altro';
+        var badgeText = c.stato === 'Prodotti ritirati' ? 'Inviata' : (c.stato || '&mdash;');
+        return '<div class="consulenza-card" id="card-' + c.consulenza_id + '" onclick="toggleCard(\'' + c.consulenza_id + '\')">' +
+          '<div class="card-row">' +
+            '<div class="card-avatar">' + initials + '</div>' +
+            '<div class="card-info">' +
+              '<div class="card-nome">' + highlight(c.cliente_nome || '&mdash;') + '</div>' +
+              '<div class="card-pelle">' + (c.tipo_pelle || '') + '</div>' +
+            '</div>' +
+            '<div class="card-meta">' +
+              '<div class="card-totale">' +
+                '<div class="card-totale-val" id="totR-' + c.consulenza_id + '">' + totDisplay + '</div>' +
+                '<div class="card-totale-label">ritirato</div>' +
+              '</div>' +
+              '<span class="badge ' + badgeClass + '" id="badge-' + c.consulenza_id + '">' + badgeText + '</span>' +
+              '<span class="card-chevron">&#9662;</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="detail-panel" id="panel-' + c.consulenza_id + '"><div class="detail-loading">Caricamento prodotti...</div></div>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+
+    document.getElementById('container').innerHTML = html;
+  }
+
+  // ── Toggle card ───────────────────────────────────────────────────────────
+
+  async function toggleCard(id) {
+    var card = document.getElementById('card-' + id);
+    var panel = document.getElementById('panel-' + id);
+    if (card.classList.contains('open')) { card.classList.remove('open'); return; }
+    card.classList.add('open');
+    if (panel.dataset.loaded) return;
+    panel.dataset.loaded = '1';
+    try {
+      var res = await fetch(API + '?action=getProdotti&consulenza_id=' + encodeURIComponent(id));
+      var data = await res.json();
+      prodottiCache[id] = data.prodotti || [];
+      renderDetail(panel, prodottiCache[id], id, consulenze.find(function(c) { return c.consulenza_id === id; }));
+    } catch(e) { panel.innerHTML = '<div class="detail-loading">Errore caricamento</div>'; }
+  }
+
+  // ── Render detail ─────────────────────────────────────────────────────────
+
+  function renderDetail(panel, prodotti, cId, c) {
+    var stato = c ? c.stato : '';
+
+    var totSalvato = getTotale(cId);
+    var totRit = '';
+    if (totSalvato !== null && totSalvato !== '') {
+      totRit = totSalvato;
+    } else if (c && c.totale_ritirato !== '' && c.totale_ritirato !== null && c.totale_ritirato !== undefined) {
+      totRit = parseFloat(c.totale_ritirato).toFixed(2);
+    }
+
+    var totAuto = calcolaTotaleSpuntati(cId);
+
+    var items = prodotti.length === 0
+      ? '<p style="font-size:13px;color:#aeaeb2;padding:8px 0">Nessun prodotto trovato</p>'
+      : prodotti.map(function(p) {
+          var pvSaved = getPrezzo(cId, p.prodotto_id);
+          var pv = pvSaved !== null ? pvSaved : (p.prezzo !== '' && p.prezzo !== undefined && p.prezzo !== null ? p.prezzo : '');
+          var pd = pv !== '' ? parseFloat(pv).toFixed(2) : '';
+          return '<div class="prodotto-item">' +
+            '<div class="prodotto-top">' +
+              '<div class="prodotto-nome">' + (p.prodotto_nome || '&mdash;') + '</div>' +
+              (p.brand ? '<div class="prodotto-brand">' + p.brand + '</div>' : '') +
+            '</div>' +
+            '<div class="prodotto-tags">' + stepTags(p.step) + ritualeTags(p.rituale) + '</div>' +
+            (p.utilizzo ? '<div class="prodotto-utilizzo">' + p.utilizzo + '</div>' : '') +
+            '<div class="prodotto-bottom">' +
+              '<label class="ritirato-toggle" onclick="event.stopPropagation()">' +
+                '<input type="checkbox" ' + (p.ritirato ? 'checked' : '') + ' onchange="onCheckRitirato(\'' + p.prodotto_id + '\', this, \'' + cId + '\')">' +
+                '<span>Ritirato</span>' +
+              '</label>' +
+              '<div class="prodotto-prezzo-wrap" onclick="event.stopPropagation()">' +
+                '<span class="prodotto-prezzo-label">&euro;</span>' +
+                '<input type="number" class="prodotto-prezzo-input" value="' + pd + '" placeholder="&mdash;" step="0.01" min="0"' +
+                  ' oninput="onPrezzoInput(\'' + p.prodotto_id + '\', \'' + cId + '\', this.value)" onclick="event.stopPropagation()">' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+
+    panel.innerHTML =
+      '<div class="prodotti-section"><div class="section-title">Prodotti assegnati</div>' + items + '</div>' +
+      '<div class="actions-section" onclick="event.stopPropagation()">' +
+        '<div class="action-group">' +
+          '<div class="action-label">Stato consulenza</div>' +
+          '<select class="action-select" id="stato-' + cId + '">' +
+            '<option ' + (stato === 'In attesa di ritiro' ? 'selected' : '') + '>In attesa di ritiro</option>' +
+            '<option ' + (stato === 'Prodotti ritirati' ? 'selected' : '') + '>Prodotti ritirati</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="action-group">' +
+          '<div class="action-label">Totale ritirato (&euro;)</div>' +
+          '<input type="number" class="action-input" id="totale-' + cId + '" placeholder="Inserisci o calcola dai prodotti" step="0.01" min="0" value="' + totRit + '" oninput="onTotaleInput(\'' + cId + '\', this.value)" onclick="event.stopPropagation()">' +
+          '<div class="totale-auto-info" id="tai-' + cId + '">' + (totAuto > 0 ? 'Somma prodotti spuntati: &euro;' + totAuto.toFixed(2) : 'Spunta i prodotti per il calcolo automatico') + '</div>' +
+        '</div>' +
+        '<button class="btn-save" onclick="event.stopPropagation(); salva(\'' + cId + '\')">Salva</button>' +
+        '<span class="save-ok" id="ok-' + cId + '">&#10003; Salvato</span>' +
+      '</div>';
+  }
+
+  // ── Input handlers ────────────────────────────────────────────────────────
+
+  function onPrezzoInput(prodId, cId, val) {
+    setPrezzo(cId, prodId, val);
+    var prod = (prodottiCache[cId] || []).find(function(p) { return p.prodotto_id === prodId; });
+    if (prod) prod.prezzo = val;
+    aggiornaInfoAuto(cId);
+    var totSalvato = getTotale(cId);
+    if (!totSalvato) {
+      var a = calcolaTotaleSpuntati(cId);
+      var el = document.getElementById('totale-' + cId);
+      if (el && a > 0) el.value = a.toFixed(2);
+    }
+  }
+
+  function onTotaleInput(cId, val) {
+    setTotale(cId, val);
+  }
+
+  function aggiornaInfoAuto(cId) {
+    var a = calcolaTotaleSpuntati(cId);
+    var el = document.getElementById('tai-' + cId);
+    if (el) el.textContent = a > 0 ? 'Somma prodotti spuntati: \u20ac' + a.toFixed(2) : 'Spunta i prodotti per il calcolo automatico';
+  }
+
+  async function onCheckRitirato(prodId, cb, cId) {
+    var prod = (prodottiCache[cId] || []).find(function(p) { return p.prodotto_id === prodId; });
+    if (prod) prod.ritirato = cb.checked;
+    aggiornaInfoAuto(cId);
+    var totSalvato = getTotale(cId);
+    if (!totSalvato) {
+      var a = calcolaTotaleSpuntati(cId);
+      var el = document.getElementById('totale-' + cId);
+      if (el) el.value = a > 0 ? a.toFixed(2) : '';
+    }
+    try {
+      var res = await fetch(API + '?action=updateRitirato&prodotto_id=' + encodeURIComponent(prodId) + '&ritirato=' + cb.checked);
+      var data = await res.json();
+      if (!data.success) { if (prod) prod.ritirato = !cb.checked; cb.checked = !cb.checked; }
+    } catch(e) { if (prod) prod.ritirato = !cb.checked; cb.checked = !cb.checked; }
+  }
+
+  // ── Salva ─────────────────────────────────────────────────────────────────
+
+  async function salva(cId) {
+    var stato = document.getElementById('stato-' + cId).value;
+    var totaleEl = document.getElementById('totale-' + cId);
+    var ok = document.getElementById('ok-' + cId);
+    var totale = totaleEl ? totaleEl.value : '';
+    if (!totale) {
+      var a = calcolaTotaleSpuntati(cId);
+      if (a > 0) totale = a.toFixed(2);
+    }
+    try {
+      await fetch(API + '?action=updateStato&consulenza_id=' + encodeURIComponent(cId) + '&stato=' + encodeURIComponent(stato));
+      if (totale) {
+        await fetch(API + '?action=updateTotaleRitirato&consulenza_id=' + encodeURIComponent(cId) + '&totale=' + encodeURIComponent(totale));
+        setTotale(cId, totale);
+      }
+
+      var c = consulenze.find(function(c) { return c.consulenza_id === cId; });
+      if (c) {
+        c.stato = stato;
+        if (totale) c.totale_ritirato = totale;
+      }
+
+      var badge = document.getElementById('badge-' + cId);
+      if (badge) {
+        badge.className = 'badge ' + (stato === 'In attesa di ritiro' ? 'badge-attesa' : stato === 'Prodotti ritirati' ? 'badge-completa' : 'badge-altro');
+        badge.textContent = stato === 'Prodotti ritirati' ? 'Inviata' : stato;
+      }
+
+      if (totale) {
+        var el = document.getElementById('totR-' + cId);
+        if (el) el.textContent = '\u20ac' + parseFloat(totale).toFixed(2);
+      }
+
+      updateSummary();
+      ok.classList.add('show');
+      setTimeout(function() { ok.classList.remove('show'); }, 2500);
+    } catch(e) { console.error(e); }
+  }
+
+  function showError(msg) {
+    document.getElementById('container').innerHTML =
+      '<div class="empty"><div class="empty-title">Errore</div><div class="empty-sub">' + msg + '</div></div>';
+  }
+</script>
+</body>
+</html>
