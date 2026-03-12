@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>La tua Consulenza Skincare · Matilde</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; font-size: 15px; }
+
+    /* ── Login ── */
+    #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #fff; padding: 24px; }
+    .login-box { width: 100%; max-width: 380px; text-align: center; }
+    .login-brand { font-size: 13px; font-weight: 500; letter-spacing: 0.08em; color: #6e6e73; text-transform: uppercase; margin-bottom: 12px; }
+    .login-title { font-size: 28px; font-weight: 600; color: #1d1d1f; letter-spacing: -0.3px; margin-bottom: 8px; }
+    .login-subtitle { font-size: 15px; color: #6e6e73; margin-bottom: 36px; }
+    .login-input { width: 100%; padding: 13px 16px; border: 1px solid #d2d2d7; border-radius: 10px; background: #f5f5f7; font-family: inherit; font-size: 15px; color: #1d1d1f; outline: none; transition: border-color 0.15s, box-shadow 0.15s; margin-bottom: 12px; text-align: center; }
+    .login-input:focus { border-color: #0071e3; box-shadow: 0 0 0 3px rgba(0,113,227,0.15); background: #fff; }
+    .login-input::placeholder { color: #aeaeb2; }
+    .login-btn { width: 100%; padding: 13px; background: #0071e3; color: #fff; border: none; border-radius: 10px; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+    .login-btn:hover { background: #0077ed; }
+    .login-btn:active { transform: scale(0.99); }
+    .login-error { margin-top: 12px; font-size: 13px; color: #ff3b30; display: none; }
+
+    /* ── App ── */
+    #app { display: none; min-height: 100vh; }
+
+    /* ── Nav ── */
+    nav { background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 100; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 52px; }
+    .nav-brand { font-size: 17px; font-weight: 600; color: #1d1d1f; letter-spacing: -0.2px; }
+    .btn-exit { font-size: 13px; font-weight: 500; color: #0071e3; background: none; border: none; cursor: pointer; font-family: inherit; }
+
+    /* ── Main ── */
+    .main { max-width: 600px; margin: 0 auto; padding: 28px 16px 80px; }
+
+    /* ── Hero ── */
+    .hero { padding: 24px 4px 20px; margin-bottom: 4px; }
+    .hero-title { font-size: 28px; font-weight: 700; color: #1d1d1f; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .hero-sub { font-size: 15px; color: #6e6e73; }
+
+    /* ── Sezione card ── */
+    .sezione { background: #fff; border-radius: 12px; border: 1px solid #e8e8ed; margin-bottom: 12px; overflow: hidden; }
+    .sezione-header { padding: 14px 20px; border-bottom: 1px solid #f2f2f2; }
+    .sezione-titolo { font-size: 11px; font-weight: 600; color: #aeaeb2; text-transform: uppercase; letter-spacing: 0.07em; }
+    .sezione-body { padding: 18px 20px; }
+
+    /* ── Testi ── */
+    .testo-sezione { font-size: 15px; color: #3a3a3c; line-height: 1.7; white-space: pre-wrap; }
+    .obiettivi-lista { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .obiettivi-lista li { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; color: #3a3a3c; line-height: 1.6; }
+    .obiettivi-lista li::before { content: ''; width: 6px; height: 6px; min-width: 6px; border-radius: 50%; background: #0071e3; margin-top: 8px; }
+    .empty-section { font-size: 14px; color: #aeaeb2; font-style: italic; }
+
+    /* ── Protocollo ── */
+    .protocollo-giorno .sezione-header { background: #fffbf0; border-bottom: 1px solid #f5e8c8; }
+    .protocollo-giorno .sezione-titolo { color: #a05a00; }
+    .protocollo-notte .sezione-header { background: #f2f2fa; border-bottom: 1px solid #d8d8f0; }
+    .protocollo-notte .sezione-titolo { color: #3a3a8a; }
+
+    .prodotti-lista { display: flex; flex-direction: column; }
+    .prodotto-card { padding: 16px 20px; border-bottom: 1px solid #f5f5f7; }
+    .prodotto-card:last-child { border-bottom: none; }
+    .step-label { font-size: 11px; font-weight: 600; color: #aeaeb2; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px; }
+    .prodotto-nome { font-size: 15px; font-weight: 600; color: #1d1d1f; margin-bottom: 3px; line-height: 1.4; }
+    .prodotto-brand { font-size: 12px; color: #0071e3; font-weight: 500; margin-bottom: 8px; }
+    .prodotto-utilizzo { font-size: 13px; color: #6e6e73; line-height: 1.6; }
+
+    /* ── Contatti ── */
+    .contatti-link { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; background: #f5f5f7; border-radius: 10px; color: #0071e3; text-decoration: none; font-size: 14px; font-weight: 500; margin-top: 10px; }
+    .contatti-link:active { background: #e8e8ed; }
+
+    /* ── Loading ── */
+    .loading-wrap { min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: #aeaeb2; font-size: 14px; }
+    .spinner { width: 28px; height: 28px; border: 2px solid #e8e8ed; border-top-color: #0071e3; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-brand">Matilde Skincare</div>
+    <h1 class="login-title">La tua consulenza</h1>
+    <p class="login-subtitle">Accedi per visualizzare il tuo protocollo personalizzato</p>
+    <input type="text" id="login-nome" class="login-input" placeholder="Il tuo nome e cognome" autocomplete="off" autocapitalize="words" />
+    <input type="password" id="login-pass" class="login-input" placeholder="Password" autocomplete="off" />
+    <button class="login-btn" onclick="doLogin()">Accedi</button>
+    <div class="login-error" id="login-error">Nome o password non corretti.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <nav>
+    <div class="nav-brand">Matilde Skincare</div>
+    <button class="btn-exit" onclick="doLogout()">Esci</button>
+  </nav>
+  <div class="main" id="main-content">
+    <div class="loading-wrap"><div class="spinner"></div><span>Caricamento...</span></div>
+  </div>
+</div>
+
+<script>
+var API = 'https://script.google.com/macros/s/AKfycbwxwSEH5iRAbiQGIVBJpWU9u_8FM9Nzc5chCYZoxZ8AKy1TrtISpU724BQhnuEUj6RO/exec';
+
+var CLIENTI = {
+  'mariagiulia spazzapan': {
+    password: 'pasMGskinC4r3!',
+    displayName: 'Mariagiulia Spazzapan',
+    consulenza_id: '31d1988f-14dd-801e-a763-d2d572f38fc4'
+  }
+};
+
+var clienteCorrente = null;
+
+function doLogin() {
+  var nome = document.getElementById('login-nome').value.trim().toLowerCase();
+  var pass = document.getElementById('login-pass').value.trim();
+  var cliente = CLIENTI[nome];
+  if (!cliente || cliente.password !== pass) {
+    document.getElementById('login-error').style.display = 'block';
+    return;
+  }
+  clienteCorrente = cliente;
+  document.getElementById('login-error').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadConsulenza();
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') doLogin();
+});
+
+function doLogout() {
+  clienteCorrente = null;
+  document.getElementById('login-nome').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+async function loadConsulenza() {
+  document.getElementById('main-content').innerHTML = '<div class="loading-wrap"><div class="spinner"></div><span>Caricamento...</span></div>';
+  try {
+    var res = await fetch(API + '?action=getConsulenzaCliente&consulenza_id=' + encodeURIComponent(clienteCorrente.consulenza_id));
+    var data = await res.json();
+    if (data.error) {
+      document.getElementById('main-content').innerHTML = '<div class="loading-wrap"><span>Errore: ' + data.error + '</span></div>';
+      return;
+    }
+    renderConsulenza(data);
+  } catch(e) {
+    document.getElementById('main-content').innerHTML = '<div class="loading-wrap"><span>Errore di connessione. Riprova.</span></div>';
+  }
+}
+
+function renderConsulenza(d) {
+  var nome = clienteCorrente.displayName.split(' ')[0];
+  var html = '';
+
+  // Hero
+  html += '<div class="hero">';
+  html += '<div class="hero-title">Ciao, ' + escHtml(nome) + ' 👋</div>';
+  html += '<div class="hero-sub">Il tuo protocollo skincare personalizzato</div>';
+  html += '</div>';
+
+  // Analisi della pelle
+  html += card('Analisi della pelle',
+    d.analisi ? '<p class="testo-sezione">' + escHtml(d.analisi) + '</p>' : '<p class="empty-section">Non ancora compilata</p>'
+  );
+
+  // Obiettivi skincare
+  var obHtml = '';
+  if (d.obiettivi && d.obiettivi.length > 0) {
+    obHtml = '<ul class="obiettivi-lista">';
+    d.obiettivi.forEach(function(o) { obHtml += '<li>' + escHtml(o.replace(/\n/g, '').trim()) + '</li>'; });
+    obHtml += '</ul>';
+  } else { obHtml = '<p class="empty-section">Non ancora compilati</p>'; }
+  html += card('Obiettivi skincare', obHtml);
+
+  // Protocollo giorno
+  html += protocolloCard('Protocollo Skincare Giorno ☀️', d.prodotti_giorno || [], 'giorno');
+
+  // Protocollo notte
+  html += protocolloCard('Protocollo Skincare Notte 🌙', d.prodotti_notte || [], 'notte');
+
+  // Consigli
+  html += card('Consigli',
+    d.consigli ? '<p class="testo-sezione">' + escHtml(d.consigli) + '</p>' : '<p class="empty-section">Non ancora compilati</p>'
+  );
+
+  // Durata
+  html += card('Durata',
+    d.durata ? '<p class="testo-sezione">' + escHtml(d.durata) + '</p>' : '<p class="empty-section">Non ancora compilata</p>'
+  );
+
+  // Contatti
+  var cHtml = '';
+  if (d.contatti) {
+    try {
+      var c = JSON.parse(d.contatti);
+      if (c.testo) cHtml += '<p class="testo-sezione" style="margin-bottom:12px">' + escHtml(c.testo) + '</p>';
+      if (c.link) cHtml += '<a href="' + c.link + '" class="contatti-link" target="_blank">💬 Scrivimi su WhatsApp</a>';
+    } catch(e) {
+      cHtml = '<p class="testo-sezione">' + escHtml(d.contatti) + '</p>';
+    }
+  } else { cHtml = '<p class="empty-section">Non ancora compilati</p>'; }
+  html += card('Contatti', cHtml);
+
+  document.getElementById('main-content').innerHTML = html;
+}
+
+function card(titolo, bodyHtml) {
+  return '<div class="sezione">' +
+    '<div class="sezione-header"><div class="sezione-titolo">' + titolo + '</div></div>' +
+    '<div class="sezione-body">' + bodyHtml + '</div>' +
+  '</div>';
+}
+
+function protocolloCard(titolo, prodotti, tipo) {
+  var cls = tipo === 'giorno' ? 'protocollo-giorno' : 'protocollo-notte';
+  var html = '<div class="sezione ' + cls + '">';
+  html += '<div class="sezione-header"><div class="sezione-titolo">' + titolo + '</div></div>';
+  if (!prodotti || prodotti.length === 0) {
+    html += '<div class="sezione-body"><p class="empty-section">Nessun prodotto assegnato</p></div>';
+  } else {
+    html += '<div class="prodotti-lista">';
+    prodotti.forEach(function(p) {
+      html += '<div class="prodotto-card">';
+      if (p.step) html += '<div class="step-label">' + escHtml(p.step) + '</div>';
+      html += '<div class="prodotto-nome">' + escHtml(p.prodotto_nome || '') + '</div>';
+      if (p.brand) html += '<div class="prodotto-brand">' + escHtml(p.brand) + '</div>';
+      if (p.utilizzo) html += '<div class="prodotto-utilizzo">' + escHtml(p.utilizzo) + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
